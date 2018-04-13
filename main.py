@@ -4,6 +4,7 @@ from os import path
 from settings import *
 from sprites import *
 
+
 class Game:
     def __init__(self):
         pg.init()
@@ -11,6 +12,7 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500, 100)
+        self.end = None
         self.load_data()
 
     def load_data(self):
@@ -31,6 +33,8 @@ class Game:
                     Wall(self, col, row)
                 if tile == "S":
                     Mob(self, col * TILESIZE, row * TILESIZE)
+                if tile == "E":
+                    self.end = End(self, col * TILESIZE, row * TILESIZE)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -49,6 +53,11 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
 
+        # mobs hit end
+        hits = pg.sprite.spritecollide(self.end, self.mobs, False)
+        for hit in hits:
+            hit.kill()
+
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
@@ -57,7 +66,10 @@ class Game:
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+        # self.draw_grid()
+        for sprite in self.all_sprites:
+            if isinstance(sprite, Mob) or isinstance(sprite, End):
+                sprite.draw_health()
         self.all_sprites.draw(self.screen)
         pg.display.flip()
 
@@ -75,6 +87,7 @@ class Game:
 
     def show_go_screen(self):
         pass
+
 
 # create the game object
 g = Game()

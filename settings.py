@@ -8,6 +8,7 @@ LIGHTGREY = (100, 100, 100)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
+CYAN = (0, 255, 255)
 
 # game settings
 WIDTH = 1024   # 16 * 64 or 32 * 32 or 64 * 16
@@ -20,7 +21,10 @@ TILESIZE = 32
 GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
-# Mob Settings
+# Mob settings
 MOB_SPEED = 75
 MOB_HEALTH = 100
 MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE, TILESIZE)
+
+# End settings
+END_HEALTH = 1000
