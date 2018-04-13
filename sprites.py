@@ -14,8 +14,7 @@ class Mob(pg.sprite.Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        # Creating a temporary hit rect, change this later
-        self.hit_rect = self.rect.copy()
+        self.hit_rect = MOB_HIT_RECT
         self.pos = vec(x, y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -25,7 +24,10 @@ class Mob(pg.sprite.Sprite):
         self.speed = MOB_SPEED
 
     def update(self):
-        pass
+        # The mob only needs to travel to the left
+        self.vel = vec(-self.speed, 0)
+        self.pos += self.vel * self.game.dt
+        self.rect.center = self.pos
 
 
 class Wall(pg.sprite.Sprite):
