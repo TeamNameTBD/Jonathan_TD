@@ -1,3 +1,5 @@
+import pygame as pg
+
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -19,5 +21,6 @@ GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE
 
 # Mob Settings
-MOB_SPEED = 150
+MOB_SPEED = 75
 MOB_HEALTH = 100
+MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE, TILESIZE)
