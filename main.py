@@ -25,7 +25,9 @@ class Game:
     def new(self):
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
+        self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.bullets = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
@@ -35,6 +37,8 @@ class Game:
                     Mob(self, col * TILESIZE, row * TILESIZE)
                 if tile == "E":
                     self.end = End(self, col * TILESIZE, row * TILESIZE)
+                if tile == "T":
+                    Tower(self, col * TILESIZE, row * TILESIZE)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -56,6 +60,7 @@ class Game:
         # mobs hit end
         hits = pg.sprite.spritecollide(self.end, self.mobs, False)
         for hit in hits:
+            self.end.health -= hit.damage
             hit.kill()
 
     def draw_grid(self):
