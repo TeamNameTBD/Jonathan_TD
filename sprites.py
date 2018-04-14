@@ -36,6 +36,8 @@ class Tower(pg.sprite.Sprite):
             elif closest_mob.distance_from_end > mob.distance_from_end and mob.alive():
                 closest_mob = mob
             self.target = closest_mob
+        if len(mobs_in_range) == 0:
+            self.target = None
 
     def shoot(self):
         now = pg.time.get_ticks()
@@ -55,7 +57,6 @@ class Tower(pg.sprite.Sprite):
         self.shoot()
         self.image.fill(WHITE)
         if self.shooting:
-            # print("shooting")
             try:
                 self.image.fill((255, 0, 0, next(self.damage_alpha)), special_flags=pg.BLEND_RGBA_MULT)
             except StopIteration:
@@ -104,7 +105,29 @@ class Mob(pg.sprite.Sprite):
         if self.health <= 0:
             self.kill()
         self.distance_from_end = (self.pos - self.game.end.rect.center).length_squared()
-        print(self.distance_from_end)
+
+
+class Spawn(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(CYAN)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.last_spawn = pg.time.get_ticks()
+        self.mobs_spawned = 0
+
+    def spawn_mob(self):
+        Mob(self.game, self.rect.x, self.rect.y)
+
+    def update(self, *args):
+        now = pg.time.get_ticks()
+        if now - self.last_spawn > SPAWN_DELAY and self.mobs_spawned < WAVE_SIZE:
+            self.last_spawn = now
+            self.mobs_spawned += 1
+            self.spawn_mob()
 
 
 class End(pg.sprite.Sprite):

@@ -34,7 +34,7 @@ class Game:
                 if tile == "1":
                     Wall(self, col, row)
                 if tile == "S":
-                    Mob(self, col * TILESIZE, row * TILESIZE)
+                    Spawn(self, col * TILESIZE, row * TILESIZE)
                 if tile == "E":
                     self.end = End(self, col * TILESIZE, row * TILESIZE)
                 if tile == "T":
