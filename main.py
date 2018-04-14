@@ -6,6 +6,7 @@ from sprites import *
 
 
 class Game:
+    # Initialize pygame and load data
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -15,6 +16,7 @@ class Game:
         self.end = None
         self.load_data()
 
+    # Loads files into pygame
     def load_data(self):
         game_folder = path.dirname(__file__)
         self.map_data = []
@@ -22,6 +24,7 @@ class Game:
             for line in f:
                 self.map_data.append(line)
 
+    # Clear all and create new game
     def new(self):
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
@@ -38,7 +41,7 @@ class Game:
                 if tile == "E":
                     self.end = End(self, col * TILESIZE, row * TILESIZE)
                 if tile == "T":
-                    Tower(self, col * TILESIZE, row * TILESIZE)
+                    TowerNode(self, col * TILESIZE, row * TILESIZE)
 
     def run(self):
         # game loop - set self.playing = False to end the game

@@ -11,6 +11,7 @@ class Tower(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.towers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        # Temporary Image
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(WHITE)
         self.rect = self.image.get_rect()
@@ -23,19 +24,23 @@ class Tower(pg.sprite.Sprite):
         self.shooting = False
         self.damage_alpha = None
 
+    # Chooses target based on how close it is to the end
     def acquire_target(self):
         mobs_in_range = []
         closest_mob = None
+        # Find mobs within range of tower's radius
         for mob in self.game.mobs:
             dist = self.pos - mob.pos
             if 0 < dist.length() < TOWER_ATTACK_RADIUS:
                 mobs_in_range.append(mob)
+        # Target the closest mob the the End sprite
         for mob in mobs_in_range:
             if closest_mob is None:
                 closest_mob = mob
             elif closest_mob.distance_from_end > mob.distance_from_end and mob.alive():
                 closest_mob = mob
             self.target = closest_mob
+        # If there are no mobs in range, clear target
         if len(mobs_in_range) == 0:
             self.target = None
 
@@ -49,6 +54,7 @@ class Tower(pg.sprite.Sprite):
                 self.target.health -= self.damage
 
     def shooting_anim(self):
+        # Flash as shooting
         self.shooting = True
         self.damage_alpha = chain(DAMAGE_ALPHA * 2)
 
@@ -68,10 +74,12 @@ class Mob(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        # Temporary Image
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(LIGHTGREY)
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
+        # Create hit rect for colision purposes, may not be needed
         self.hit_rect = MOB_HIT_RECT
         self.pos = vec(self.rect.center)
         self.vel = vec(0, 0)
@@ -84,6 +92,7 @@ class Mob(pg.sprite.Sprite):
         self.distance_from_end = None
 
     def draw_health(self):
+        # Display health bar as percentage of health
         health_pct = self.health / MOB_HEALTH
         if health_pct > 0.6:
             col = GREEN
@@ -107,7 +116,34 @@ class Mob(pg.sprite.Sprite):
         self.distance_from_end = (self.pos - self.game.end.rect.center).length_squared()
 
 
+class TowerNode(pg.sprite.Sprite):
+    # Sprite that creates a node where towers can be placed
+    # Maybe should be a subclass of wall?
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        # Temporary image
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(BROWN)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = pg.time.get_ticks()
+        self.tower = None
+
+    def get_clicked(self):
+        # If the sprite is left clicked, spawn a tower
+        mouse = pg.mouse.get_pressed()
+        if mouse[0]:
+            if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower is None:
+                self.tower = Tower(self.game, self.rect.x, self.rect.y)
+
+    def update(self):
+        self.get_clicked()
+
+
 class Spawn(pg.sprite.Sprite):
+    # Spawning point
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -131,6 +167,7 @@ class Spawn(pg.sprite.Sprite):
 
 
 class End(pg.sprite.Sprite):
+    # Ending point - Defend this!
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
