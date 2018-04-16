@@ -3,6 +3,7 @@ import sys
 from os import path
 from settings import *
 from sprites import *
+import pathing
 
 
 class Game:
@@ -23,6 +24,12 @@ class Game:
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
+        # determing pathing solution
+        width, height, walls, start, end = pathing.load_map("map.txt")
+        mob_path = pathing.AStar()
+        mob_path.init_grid(width, height, walls, start, end)
+        mob_path = (mob_path.solve())
+        self.mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
 
     # Clear all and create new game
     def new(self):

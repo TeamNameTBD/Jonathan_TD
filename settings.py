@@ -36,7 +36,7 @@ MOB_DAMAGE = 500
 
 # Spawn settings
 SPAWN_DELAY = 1000
-WAVE_SIZE = 5
+WAVE_SIZE = 2
 
 # End settings
 END_HEALTH = 1000

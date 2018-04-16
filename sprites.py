@@ -6,6 +6,31 @@ from itertools import chain
 vec = pg.math.Vector2
 
 
+def collide_hit_rect(one, two):
+    return one.hit_rect.colliderect(two.rect)
+
+
+def collide_with_walls(sprite, group, dir):
+    if dir == "X":
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
+            if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2
+            sprite.vel.x = 0
+            sprite.hit_rect.centerx = sprite.pos.x
+    if dir == "Y":
+        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+        if hits:
+            if hits[0].rect.centery > sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
+            if hits[0].rect.centery < sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            sprite.vel.y = 0
+            sprite.hit_rect.centery = sprite.pos.y
+
+
 class Tower(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.towers
@@ -81,6 +106,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.topleft = (x, y)
         # Create hit rect for colision purposes, may not be needed
         self.hit_rect = MOB_HIT_RECT
+        self.hit_rect.center = self.rect.center
         self.pos = vec(self.rect.center)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -89,7 +115,10 @@ class Mob(pg.sprite.Sprite):
         self.health_bar = None
         self.speed = MOB_SPEED
         self.damage = MOB_DAMAGE
-        self.distance_from_end = None
+        self.path = self.game.mob_path
+        self.path_step = 0
+        self.current_direction = vec(-1, 0)
+        self.distance_from_end = len(self.path) - self.path_step
 
     def draw_health(self):
         # Display health bar as percentage of health
@@ -104,23 +133,49 @@ class Mob(pg.sprite.Sprite):
         self.health_bar = pg.Rect(0, 0, width, 7)
         pg.draw.rect(self.image, col, self.health_bar)
 
+    def update_direction(self):
+        if self.path[self.path_step] - self.pos == -self.current_direction:
+            self.path_step += 1
+        try:
+            self.current_direction = vec(self.path[self.path_step] - self.pos).normalize()
+        except ValueError:
+            self.path_step += 1
+            self.current_direction = vec(self.path[self.path_step] - self.pos).normalize()
+
+    def follow_path(self):
+        dir = self.update_direction()
+        if dir in [(1, 1), (1, -1), (-1, 1), (-1, -1), -self.current_direction]:
+            self.pos = self.path[self.path_step]
+            dir = self.update_direction()
+        else:
+            self.vel = dir * self.speed
+            self.pos += self.vel * self.game.dt
+
+        self.current_direction = dir
+
     def update(self):
         # The mob only needs to travel to the left
+        # self.follow_path()
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(LIGHTGREY)
-        self.vel = vec(-self.speed, 0)
+        self.vel = self.current_direction * self.speed
         self.pos += self.vel * self.game.dt
-        self.rect.center = self.pos
+        self.hit_rect.centerx = self.pos.x
+        collide_with_walls(self, self.game.walls, "X")
+        self.hit_rect.centery = self.pos.y
+        collide_with_walls(self, self.game.walls, "Y")
+        self.rect.center = self.hit_rect.center
+        self.update_direction()
         if self.health <= 0:
             self.kill()
-        self.distance_from_end = (self.pos - self.game.end.rect.center).length_squared()
+        self.distance_from_end = len(self.path) - self.path_step
 
 
 class TowerNode(pg.sprite.Sprite):
     # Sprite that creates a node where towers can be placed
     # Maybe should be a subclass of wall?
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # Temporary image
