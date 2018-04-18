@@ -1,6 +1,13 @@
 import heapq
 
 
+def find_change_in_dir(mob_path):
+    starting_pos = mob_path[0]
+    directions
+    for vec in mob_path[1:]:
+
+
+
 def load_map(txt):
     map = []
     walls = []
