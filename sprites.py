@@ -165,7 +165,7 @@ class Mob(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, "Y")
         self.rect.center = self.hit_rect.center
-        self.update_direction()
+        # self.update_direction()
         if self.health <= 0:
             self.kill()
         self.distance_from_end = len(self.path) - self.path_step

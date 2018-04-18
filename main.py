@@ -15,6 +15,8 @@ class Game:
         self.clock = pg.time.Clock()
         pg.key.set_repeat(500, 100)
         self.end = None
+        self.playing = True
+        self.running = True
         self.load_data()
 
     # Loads files into pygame
@@ -39,6 +41,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.mob_timer_delay = pg.time.get_ticks()
         self.bullets = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         for row, tiles in enumerate(self.map_data):
@@ -75,6 +78,16 @@ class Game:
             self.end.health -= hit.damage
             hit.kill()
 
+        # Check for ending conditions:
+        # print(f"end health: {self.end.health}")
+        # print(f"# of mobs: {len(self.mobs)}")
+        if self.end.health == 0:
+            self.playing = False
+        now = pg.time.get_ticks()
+        if now - self.mob_timer_delay > SPAWN_DELAY:
+            if len(self.mobs) == 0:
+                self.playing = False
+
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
@@ -109,7 +122,7 @@ class Game:
 # create the game object
 g = Game()
 g.show_start_screen()
-while True:
+while g.running:
     g.new()
     g.run()
     g.show_go_screen()
