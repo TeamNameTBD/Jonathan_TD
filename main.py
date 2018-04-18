@@ -30,6 +30,8 @@ class Game:
         mob_path.init_grid(width, height, walls, start, end)
         mob_path = (mob_path.solve())
         self.mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
+        print(self.mob_path)
+        self.quit()
 
     # Clear all and create new game
     def new(self):
