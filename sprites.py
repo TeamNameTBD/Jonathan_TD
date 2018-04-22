@@ -119,7 +119,6 @@ class Mob(pg.sprite.Sprite):
         self.path = self.game.mob_path
         self.path_step = 0
         self.current_direction = self.path[self.path_step][1]
-        self.change_dir_time = pg.time.get_ticks()
         # This is now broken because I am calculating the path differently
         self.distance_from_end = len(self.game.mob_path) - self.path_step
 
@@ -148,47 +147,49 @@ class Mob(pg.sprite.Sprite):
         if self.current_direction.x == 1:
             if self.path[self.path_step + 1][0].x < self.pos.x:
                 print("Change dir")
+                print(len(self.path))
                 self.path_step += 1
                 if self.path_step - current_step > 1:
                     print("something happened")
-                self.pos = self.path[self.path_step][0]
+                self.pos.x = self.path[self.path_step][0].x
                 self.current_direction = self.path[self.path_step][1]
         # Going left
         elif self.current_direction.x == -1:
             if self.path[self.path_step + 1][0].x > self.pos.x:
-                input()
                 print("Change dir")
+                print(len(self.path))
                 self.path_step += 1
                 if self.path_step - current_step > 1:
                     print("something happened")
-                self.pos = self.path[self.path_step][0]
+                self.pos.x = self.path[self.path_step][0].x
                 self.current_direction = self.path[self.path_step][1]
         # Check y value
         # Down
         elif self.current_direction.y == 1:
             if self.path[self.path_step + 1][0].y < self.pos.y:
                 print("Change dir")
+                print(len(self.path))
                 self.path_step += 1
                 if self.path_step - current_step > 1:
                     print("something happened")
-                self.pos = self.path[self.path_step][0]
+                self.pos.y = self.path[self.path_step][0].y
                 self.current_direction = self.path[self.path_step][1]
         # Up
         elif self.current_direction.y == -1:
             if self.path[self.path_step + 1][0].y > self.pos.y:
                 print("Change dir")
+                print(len(self.path))
                 self.path_step += 1
                 if self.path_step - current_step > 1:
                     print("something happened")
-                self.pos = self.path[self.path_step][0]
+                self.pos.y = self.path[self.path_step][0].y
                 self.current_direction = self.path[self.path_step][1]
 
     def update(self):
             # if self.number == 1:
                 # print(self.current_direction)
                 # print(self.path_step)
-            if pg.time.get_ticks() - self.change_dir_time > DIR_CHANGE_DELAY:
-                self.follow_path()
+            self.follow_path()
             self.image = pg.Surface((TILESIZE, TILESIZE))
             self.image.fill(LIGHTGREY)
             self.rect.center = self.pos
