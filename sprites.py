@@ -72,7 +72,6 @@ class Tower(pg.sprite.Sprite):
 
     def shoot(self):
         now = pg.time.get_ticks()
-        # print(self.target.alive())
         if self.target and self.target.alive():
             if now - self.last_shot > TOWER_FIRE_RATE:
                 self.last_shot = now
@@ -106,9 +105,6 @@ class Mob(pg.sprite.Sprite):
         self.image.fill(LIGHTGREY)
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
-        # Create hit rect for colision purposes, may not be needed
-        # self.hit_rect = MOB_HIT_RECT
-        # self.hit_rect.center = self.rect.center
         self.pos = vec(self.rect.center)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -141,66 +137,45 @@ class Mob(pg.sprite.Sprite):
         self.pos += self.vel * self.game.dt
         # check if self.pos is past the change vector
         # Check x value
-        # print(self.current_direction.x)
         # Going Right
-        # print(self.path_step)
         if self.current_direction.x == 1:
             if self.path[self.path_step + 1][0].x < self.pos.x:
-                print("Change dir")
-                print(len(self.path))
                 self.path_step += 1
-                if self.path_step - current_step > 1:
-                    print("something happened")
                 self.pos.x = self.path[self.path_step][0].x
                 self.current_direction = self.path[self.path_step][1]
         # Going left
         elif self.current_direction.x == -1:
             if self.path[self.path_step + 1][0].x > self.pos.x:
-                print("Change dir")
-                print(len(self.path))
                 self.path_step += 1
-                if self.path_step - current_step > 1:
-                    print("something happened")
                 self.pos.x = self.path[self.path_step][0].x
                 self.current_direction = self.path[self.path_step][1]
         # Check y value
         # Down
         elif self.current_direction.y == 1:
             if self.path[self.path_step + 1][0].y < self.pos.y:
-                print("Change dir")
-                print(len(self.path))
                 self.path_step += 1
-                if self.path_step - current_step > 1:
-                    print("something happened")
                 self.pos.y = self.path[self.path_step][0].y
                 self.current_direction = self.path[self.path_step][1]
         # Up
         elif self.current_direction.y == -1:
             if self.path[self.path_step + 1][0].y > self.pos.y:
-                print("Change dir")
-                print(len(self.path))
                 self.path_step += 1
-                if self.path_step - current_step > 1:
-                    print("something happened")
                 self.pos.y = self.path[self.path_step][0].y
                 self.current_direction = self.path[self.path_step][1]
 
     def update(self):
-            # if self.number == 1:
-                # print(self.current_direction)
-                # print(self.path_step)
             self.follow_path()
             self.image = pg.Surface((TILESIZE, TILESIZE))
             self.image.fill(LIGHTGREY)
             self.rect.center = self.pos
             if self.health <= 0:
+                self.game.credits += CREDIT_VALUE
                 self.kill()
             self.distance_from_end = len(self.path) - self.path_step
 
 
 class TowerNode(pg.sprite.Sprite):
     # Sprite that creates a node where towers can be placed
-    # Maybe should be a subclass of wall?
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -218,7 +193,14 @@ class TowerNode(pg.sprite.Sprite):
         mouse = pg.mouse.get_pressed()
         if mouse[0]:
             if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower is None:
-                self.tower = Tower(self.game, self.rect.x, self.rect.y)
+                if self.game.credits >= TOWER_COST:
+                    self.game.credits -= TOWER_COST
+                    self.tower = Tower(self.game, self.rect.x, self.rect.y)
+        elif mouse[2]:
+            if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower:
+                self.game.credits += TOWER_COST * TOWER_REFUND
+                self.tower.kill()
+                self.tower = None
 
     def update(self):
         self.get_clicked()
