@@ -1,4 +1,28 @@
+import pygame as pg
 import heapq
+
+vec = pg.math.Vector2
+
+
+def find_change_in_dir(mob_path):
+    """
+    Find changes in direction along the path and create an x, y, coordinate of each dir change
+    :param mob_path:
+    :return:
+    """
+    starting_pos = mob_path[0]
+    direction = (mob_path[1] - mob_path[0]).normalize()
+    change_points = {}
+    change_points[0] = (starting_pos, direction)
+    change = 1
+    for index, pos in enumerate(mob_path[1:]):
+        if (pos - starting_pos).normalize() != direction:
+            starting_pos = pos
+            direction = (mob_path[index + 2] - starting_pos).normalize()
+            change_points[change] = (mob_path[index], direction)
+            change += 1
+    change_points[change] = (mob_path[-1], vec(0, 0))
+    return change_points
 
 
 def load_map(txt):
