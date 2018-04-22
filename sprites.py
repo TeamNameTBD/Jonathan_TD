@@ -1,4 +1,5 @@
 import pygame as pg
+from pathing import find_change_in_dir
 from settings import *
 from itertools import chain
 
@@ -99,26 +100,28 @@ class Mob(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.number = len(self.game.mobs)
         # Temporary Image
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(LIGHTGREY)
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         # Create hit rect for colision purposes, may not be needed
-        self.hit_rect = MOB_HIT_RECT
-        self.hit_rect.center = self.rect.center
+        # self.hit_rect = MOB_HIT_RECT
+        # self.hit_rect.center = self.rect.center
         self.pos = vec(self.rect.center)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
-        self.rot = 0
         self.health = MOB_HEALTH
         self.health_bar = None
         self.speed = MOB_SPEED
         self.damage = MOB_DAMAGE
         self.path = self.game.mob_path
         self.path_step = 0
-        self.current_direction = vec(-1, 0)
-        self.distance_from_end = len(self.path) - self.path_step
+        self.current_direction = self.path[self.path_step][1]
+        self.change_dir_time = pg.time.get_ticks()
+        # This is now broken because I am calculating the path differently
+        self.distance_from_end = len(self.game.mob_path) - self.path_step
 
     def draw_health(self):
         # Display health bar as percentage of health
@@ -133,42 +136,65 @@ class Mob(pg.sprite.Sprite):
         self.health_bar = pg.Rect(0, 0, width, 7)
         pg.draw.rect(self.image, col, self.health_bar)
 
-    def update_direction(self):
-        if self.path[self.path_step] - self.pos == -self.current_direction:
-            self.path_step += 1
-        try:
-            self.current_direction = vec(self.path[self.path_step] - self.pos).normalize()
-        except ValueError:
-            self.path_step += 1
-            self.current_direction = vec(self.path[self.path_step] - self.pos).normalize()
-
     def follow_path(self):
-        dir = self.update_direction()
-        if dir in [(1, 1), (1, -1), (-1, 1), (-1, -1), -self.current_direction]:
-            self.pos = self.path[self.path_step]
-            dir = self.update_direction()
-        else:
-            self.vel = dir * self.speed
-            self.pos += self.vel * self.game.dt
-
-        self.current_direction = dir
-
-    def update(self):
-        # The mob only needs to travel to the left
-        # self.follow_path()
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(LIGHTGREY)
+        current_step = self.path_step
         self.vel = self.current_direction * self.speed
         self.pos += self.vel * self.game.dt
-        self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, "X")
-        self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, "Y")
-        self.rect.center = self.hit_rect.center
-        self.update_direction()
-        if self.health <= 0:
-            self.kill()
-        self.distance_from_end = len(self.path) - self.path_step
+        # check if self.pos is past the change vector
+        # Check x value
+        # print(self.current_direction.x)
+        # Going Right
+        # print(self.path_step)
+        if self.current_direction.x == 1:
+            if self.path[self.path_step + 1][0].x < self.pos.x:
+                print("Change dir")
+                self.path_step += 1
+                if self.path_step - current_step > 1:
+                    print("something happened")
+                self.pos = self.path[self.path_step][0]
+                self.current_direction = self.path[self.path_step][1]
+        # Going left
+        elif self.current_direction.x == -1:
+            if self.path[self.path_step + 1][0].x > self.pos.x:
+                input()
+                print("Change dir")
+                self.path_step += 1
+                if self.path_step - current_step > 1:
+                    print("something happened")
+                self.pos = self.path[self.path_step][0]
+                self.current_direction = self.path[self.path_step][1]
+        # Check y value
+        # Down
+        elif self.current_direction.y == 1:
+            if self.path[self.path_step + 1][0].y < self.pos.y:
+                print("Change dir")
+                self.path_step += 1
+                if self.path_step - current_step > 1:
+                    print("something happened")
+                self.pos = self.path[self.path_step][0]
+                self.current_direction = self.path[self.path_step][1]
+        # Up
+        elif self.current_direction.y == -1:
+            if self.path[self.path_step + 1][0].y > self.pos.y:
+                print("Change dir")
+                self.path_step += 1
+                if self.path_step - current_step > 1:
+                    print("something happened")
+                self.pos = self.path[self.path_step][0]
+                self.current_direction = self.path[self.path_step][1]
+
+    def update(self):
+            # if self.number == 1:
+                # print(self.current_direction)
+                # print(self.path_step)
+            if pg.time.get_ticks() - self.change_dir_time > DIR_CHANGE_DELAY:
+                self.follow_path()
+            self.image = pg.Surface((TILESIZE, TILESIZE))
+            self.image.fill(LIGHTGREY)
+            self.rect.center = self.pos
+            if self.health <= 0:
+                self.kill()
+            self.distance_from_end = len(self.path) - self.path_step
 
 
 class TowerNode(pg.sprite.Sprite):
