@@ -34,9 +34,34 @@ class Game:
         mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
         self.mob_path = pathing.find_change_in_dir(mob_path)
 
+    def draw_text(self, text, font_name, size, color, x, y, align="nw"):
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        if align == "nw":
+            text_rect.topleft = (x, y)
+        if align == "ne":
+            text_rect.topright = (x, y)
+        if align == "sw":
+            text_rect.bottomleft = (x, y)
+        if align == "se":
+            text_rect.bottomright = (x, y)
+        if align == "n":
+            text_rect.midtop = (x, y)
+        if align == "s":
+            text_rect.midbottom = (x, y)
+        if align == "e":
+            text_rect.midright = (x, y)
+        if align == "w":
+            text_rect.midleft = (x, y)
+        if align == "center":
+            text_rect.center = (x, y)
+        self.screen.blit(text_surface, text_rect)
+
     # Clear all and create new game
     def new(self):
         # initialize all variables and do all the setup for a new game
+        self.credits = STARTING_CASH
         self.all_sprites = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -78,8 +103,6 @@ class Game:
             hit.kill()
 
         # Check for ending conditions:
-        # print(f"end health: {self.end.health}")
-        # print(f"# of mobs: {len(self.mobs)}")
         if self.end.health == 0:
             self.playing = False
         now = pg.time.get_ticks()
@@ -95,11 +118,11 @@ class Game:
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        # self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
         self.all_sprites.draw(self.screen)
+        self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
         pg.display.flip()
 
     def events(self):
