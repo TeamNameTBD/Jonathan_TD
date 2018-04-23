@@ -3,6 +3,7 @@ import sys
 from os import path
 from settings import *
 from sprites import *
+from towers import *
 import pathing
 
 
