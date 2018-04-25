@@ -2,6 +2,8 @@ import pygame as pg
 from settings import *
 from itertools import chain
 
+vec = pg.math.Vector2
+
 
 class Tower(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -14,9 +16,9 @@ class Tower(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.pos = vec(self.rect.center)
-        self.damage = TOWER_DAMAGE
-        self.attack_radius = TOWER_ATTACK_RADIUS
-        self.fire_rate = TOWER_FIRE_RATE
+        self.damage = 0
+        self.attack_radius = 0
+        self.fire_rate = 0
         self.color = WHITE
         self.target = None
         self.last_shot = pg.time.get_ticks()
@@ -68,5 +70,18 @@ class Tower(pg.sprite.Sprite):
 
 
 class GunTower(Tower):
-    def __init__(self):
+    def __init__(self, game, x, y):
+        Tower.__init__(self, game, x, y)
+        self.image.fill(TOWERS["Gun"]["Color"])
+        self.damage = TOWERS["Gun"]["Damage"]
+        self.attack_radius = TOWERS["Gun"]["Attack Radius"]
+        self.fire_rate = TOWERS["Gun"]["Fire Rate"]
 
+
+class CannonTower(Tower):
+    def __init__(self, game, x, y):
+        Tower.__init__(self, game, x, y)
+        self.image.fill(TOWERS["Cannon"]["Color"])
+        self.damage = TOWERS["Cannon"]["Damage"]
+        self.attack_radius = TOWERS["Cannon"]["Attack Radius"]
+        self.fire_rate = TOWERS["Cannon"]["Fire Rate"]

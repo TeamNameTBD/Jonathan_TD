@@ -1,5 +1,6 @@
 import pygame as pg
 from settings import *
+from towers import *
 
 
 vec = pg.math.Vector2
@@ -129,12 +130,13 @@ class TowerNode(pg.sprite.Sprite):
         mouse = pg.mouse.get_pressed()
         if mouse[0]:
             if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower is None:
-                if self.game.credits >= TOWER_COST:
-                    self.game.credits -= TOWER_COST
-                    self.tower = Tower(self.game, self.rect.x, self.rect.y)
+                if self.game.credits >= TOWERS[self.game.tower_selection]["Cost"]:
+                    self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
+                    self.tower = TOWERS[self.game.tower_selection]["Class"](self.game, self.rect.x, self.rect.y)
         elif mouse[2]:
             if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower:
-                self.game.credits += TOWER_COST * TOWER_REFUND
+                self.game.credits += TOWERS[self.game.tower_selection]["Cost"] * \
+                                     TOWERS[self.game.tower_selection]["Refund"]
                 self.tower.kill()
                 self.tower = None
 

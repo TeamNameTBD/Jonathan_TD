@@ -1,4 +1,5 @@
 import pygame as pg
+from towers import *
 
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
@@ -28,25 +29,26 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 STARTING_CASH = 500
 
 # Tower settings
-TOWER_DAMAGE = 10
-TOWER_ATTACK_RADIUS = 200
-TOWER_FIRE_RATE = 250
-TOWER_COST = 250
-TOWER_REFUND = 0.75
-
-# Gun Tower
-GUN_TOWER_DAMAGE = 10
-GUN_TOWER_RADIUS = 200
-GUN_TOWER_FIRE_RATE = 250
-GUN_TOWER_COST = 250
-GUN_TOWER_COLOR = WHITE
-
-# Cannon Tower
-CANNON_TOWER_DAMAGE = 50
-CANNON_TOWER_RADIUS = 400
-CANNON_TOWER_FIRE_RATE = 1000
-CANNON_TOWER_COST = 350
-CANNON_TOWER_COLOR = CYAN
+TOWERS = {
+    "Gun": {
+        "Class": GunTower,
+        "Damage": 10,
+        "Attack Radius": 200,
+        "Fire Rate": 250,
+        "Cost": 250,
+        "Refund": 0.75,
+        "Color": WHITE
+    },
+    "Cannon": {
+        "Class": CannonTower,
+        "Damage": 50,
+        "Attack Radius": 400,
+        "Fire Rate": 1000,
+        "Cost": 350,
+        "Refund": 0.75,
+        "Color": CYAN
+    },
+}
 
 # Mob settings
 MOB_SPEED = 100
