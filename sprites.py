@@ -132,7 +132,12 @@ class TowerNode(pg.sprite.Sprite):
             if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower is None:
                 if self.game.credits >= TOWERS[self.game.tower_selection]["Cost"]:
                     self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
-                    self.tower = TOWERS[self.game.tower_selection]["Class"](self.game, self.rect.x, self.rect.y)
+                    cls = None
+                    if self.game.tower_selection == "Gun":
+                        cls = GunTower
+                    elif self.game.tower_selection == "Cannon":
+                        cls = CannonTower
+                    self.tower = cls(self.game, self.rect.x, self.rect.y)
         elif mouse[2]:
             if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower:
                 self.game.credits += TOWERS[self.game.tower_selection]["Cost"] * \

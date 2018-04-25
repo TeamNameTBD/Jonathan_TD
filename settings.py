@@ -1,5 +1,5 @@
 import pygame as pg
-from towers import *
+# from towers import GunTower, CannonTower
 
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
@@ -31,7 +31,7 @@ STARTING_CASH = 500
 # Tower settings
 TOWERS = {
     "Gun": {
-        "Class": GunTower,
+        # "Class": GunTower,
         "Damage": 10,
         "Attack Radius": 200,
         "Fire Rate": 250,
@@ -40,7 +40,7 @@ TOWERS = {
         "Color": WHITE
     },
     "Cannon": {
-        "Class": CannonTower,
+        # "Class": CannonTower,
         "Damage": 50,
         "Attack Radius": 400,
         "Fire Rate": 1000,
