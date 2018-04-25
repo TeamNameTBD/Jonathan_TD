@@ -2,7 +2,6 @@ import pygame as pg
 from settings import *
 from towers import *
 
-
 vec = pg.math.Vector2
 
 
@@ -101,14 +100,14 @@ class Mob(pg.sprite.Sprite):
                 self.current_direction = self.path[self.path_step][1]
 
     def update(self):
-            self.follow_path()
-            self.image = pg.Surface((TILESIZE, TILESIZE))
-            self.image.fill(LIGHTGREY)
-            self.rect.center = self.pos
-            if self.health <= 0:
-                self.game.credits += CREDIT_VALUE
-                self.kill()
-            self.distance_from_end = len(self.path) - self.path_step
+        self.follow_path()
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(LIGHTGREY)
+        self.rect.center = self.pos
+        if self.health <= 0:
+            self.game.credits += CREDIT_VALUE
+            self.kill()
+        self.distance_from_end = len(self.path) - self.path_step
 
 
 class TowerNode(pg.sprite.Sprite):
@@ -129,19 +128,17 @@ class TowerNode(pg.sprite.Sprite):
         # If the sprite is left clicked, spawn a tower
         mouse = pg.mouse.get_pressed()
         if mouse[0]:
-            if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower is None:
+            if self.rect.collidepoint(
+                    pg.mouse.get_pos()) and self.tower is None and self.game.tower_selection != "Sell":
                 if self.game.credits >= TOWERS[self.game.tower_selection]["Cost"]:
-                    self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
-                    cls = None
                     if self.game.tower_selection == "Gun":
-                        cls = GunTower
+                        self.tower = GunTower(self.game, self.rect.x, self.rect.y)
+                        self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
                     elif self.game.tower_selection == "Cannon":
-                        cls = CannonTower
-                    self.tower = cls(self.game, self.rect.x, self.rect.y)
-        elif mouse[2]:
-            if self.rect.collidepoint(pg.mouse.get_pos()) and self.tower:
-                self.game.credits += TOWERS[self.game.tower_selection]["Cost"] * \
-                                     TOWERS[self.game.tower_selection]["Refund"]
+                        self.tower = CannonTower(self.game, self.rect.x, self.rect.y)
+                        self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
+            elif self.rect.collidepoint(pg.mouse.get_pos()) and self.tower and self.game.tower_selection == "Sell":
+                self.game.credits += int(TOWERS[self.tower.name]["Cost"] * TOWERS[self.tower.name]["Refund"])
                 self.tower.kill()
                 self.tower = None
 
