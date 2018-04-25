@@ -76,6 +76,7 @@ class GunTower(Tower):
         self.damage = TOWERS["Gun"]["Damage"]
         self.attack_radius = TOWERS["Gun"]["Attack Radius"]
         self.fire_rate = TOWERS["Gun"]["Fire Rate"]
+        self.name = "Gun"
 
 
 class CannonTower(Tower):
@@ -85,3 +86,4 @@ class CannonTower(Tower):
         self.damage = TOWERS["Cannon"]["Damage"]
         self.attack_radius = TOWERS["Cannon"]["Attack Radius"]
         self.fire_rate = TOWERS["Cannon"]["Fire Rate"]
+        self.name = "Cannon"
