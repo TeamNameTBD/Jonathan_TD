@@ -3,6 +3,7 @@ import sys
 from os import path
 from settings import *
 from sprites import *
+from towers import *
 import pathing
 
 
@@ -68,6 +69,7 @@ class Game:
         self.mob_timer_delay = pg.time.get_ticks()
         self.bullets = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.tower_selection = "Gun"
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
