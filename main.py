@@ -5,6 +5,7 @@ from os import path
 from settings import *
 from sprites import *
 from towers import *
+from buttons import Button
 import pathing
 
 gameDisplay = pg.display.set_mode((WIDTH,HEIGHT))
@@ -74,6 +75,11 @@ class Game:
         self.running = True
         self.load_data()
 
+        # Buttons
+        self.gun_tower_button = None
+        self.cannon_tower_button = None
+        self.sell_tower_button = None
+
     # Loads files into pygame
     def load_data(self):
         game_folder = path.dirname(__file__)
@@ -123,7 +129,13 @@ class Game:
         self.mob_timer_delay = pg.time.get_ticks()
         self.bullets = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.buttons = pg.sprite.Group()
         self.tower_selection = "Gun"
+        self.gun_tower_button = Button(self, ["Gun Tower", f"Cost: {TOWERS['Gun']['Cost']}"],
+                                       WIDTH * 0.05, HEIGHT * 0.85, "Gun")
+        self.cannon_tower_button = Button(self, ["Cannon Tower", f"Cost: {TOWERS['Cannon']['Cost']}"],
+                                          WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
+        self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
@@ -179,6 +191,8 @@ class Game:
                 sprite.draw_health()
         self.all_sprites.draw(self.screen)
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
+        for button in self.buttons:
+            button.draw_text()
         pg.display.flip()
 
     def events(self):
