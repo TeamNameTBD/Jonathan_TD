@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 import sys
 from os import path
 from settings import *
@@ -6,9 +7,62 @@ from sprites import *
 from towers import *
 import pathing
 
+gameDisplay = pg.display.set_mode((WIDTH,HEIGHT))
+
+def text_objects(text,font):
+    textSurface = font.render(text, True, BLACK)
+    return textSurface, textSurface.get_rect()
+
+def button(msg,x,y,w,h,ic,ac,action=None):
+    mouse = pg.mouse.get_pos()
+    click = pg.mouse.get_pressed()
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pg.draw.rect(gameDisplay, ac, (x, y, w, h))
+        if click[0] == 1 and action != None:
+            if action == "play":
+                game_loop()
+            elif action == "quit":
+                pg.quit()
+                quit()
+    else:
+        pg.draw.rect(gameDisplay, ic, (x, y, w, h))
+
+    smallText = pg.font.Font("freesansbold.ttf", 20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ((x + (w / 2)), (y + (h / 2)))
+    gameDisplay.blit(textSurf, textRect)
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pg.draw.rect(gameDisplay, ac, (x, y, w, h))
+    else:
+        pg.draw.rect(gameDisplay, ic, (x, y, w, h))
+
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ((x + (w / 2)), (y + (h / 2)))
+    gameDisplay.blit(textSurf, textRect)
+
+def game_intro():
+    intro = True
+    while intro:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                quit()
+        gameDisplay.fill(WHITE)
+        largeText = pg.font.Font('freesansbold.ttf', 90)
+        TextSurf, TextRect = text_objects("TOWER DEFENSE!!!", largeText)
+        TextRect.center = ((WIDTH / 2), (HEIGHT / 2))
+        gameDisplay.blit(TextSurf, TextRect)
+
+        button("START", 150, 450, 150, 100, LIGHTGREEN, GREEN,"start")
+        button("QUIT", 150, 550, 150, 100, LIGHTRED, RED,"quit")
+
+        pg.display.update()
 
 class Game:
     # Initialize pygame and load data
+
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -144,9 +198,11 @@ class Game:
 
 
 # create the game object
+
 g = Game()
 g.show_start_screen()
 while g.running:
+    game_intro()
     g.new()
     g.run()
-    g.show_go_screen()
+g.show_go_screen()
