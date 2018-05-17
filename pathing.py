@@ -13,7 +13,9 @@ def find_change_in_dir(mob_path):
     starting_pos = mob_path[0]
     direction = (mob_path[1] - mob_path[0]).normalize()
     change_points = {}
+    # This is the first point on the map
     change_points[0] = (starting_pos, direction)
+    # Used to determine the index of the final point
     change = 1
     for index, pos in enumerate(mob_path[1:]):
         if (pos - starting_pos).normalize() != direction:
@@ -21,6 +23,7 @@ def find_change_in_dir(mob_path):
             direction = (mob_path[index + 2] - starting_pos).normalize()
             change_points[change] = (mob_path[index], direction)
             change += 1
+    # This is the final point on the map
     change_points[change] = (mob_path[-1], vec(0, 0))
     return change_points
 
