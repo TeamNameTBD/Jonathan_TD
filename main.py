@@ -79,6 +79,7 @@ class Game:
         self.walls = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
         self.tower_selection = "Gun"
+        self.end_condition = ""
         self.gun_tower_button = Button(self, ["Gun Tower", f"Cost: {TOWERS['Gun']['Cost']}"],
                                        WIDTH * 0.05, HEIGHT * 0.85, "Gun")
         self.cannon_tower_button = Button(self, ["Cannon Tower", f"Cost: {TOWERS['Cannon']['Cost']}"],
@@ -120,10 +121,12 @@ class Game:
 
         # Check for ending conditions:
         if self.end.health == 0:
+            self.end_condition = "lose"
             self.playing = False
         now = pg.time.get_ticks()
         if now - self.mob_timer_delay > SPAWN_DELAY:
             if len(self.mobs) == 0:
+                self.end_condition = "win"
                 self.playing = False
 
     def draw_grid(self):
@@ -208,8 +211,27 @@ class Game:
         pass
 
     def show_go_screen(self):
-        pass
+        # game over/continue
+        self.screen.fill(BLACK)
+        if self.end_condition == "win":
+            self.draw_text("You win!", FONT, 100, RED, WIDTH / 2, HEIGHT / 2, align="center")
+        elif self.end_condition == "lose":
+            self.draw_text("You lose!", FONT, 100, RED, WIDTH / 2, HEIGHT / 2, align="center")
+        self.draw_text("Press a key to return to main menu", FONT, 75, WHITE, WIDTH / 2, HEIGHT * 3 / 4, align="center")
+        pg.display.flip()
+        self.wait_for_key()
 
+    def wait_for_key(self):
+        pg.event.wait()
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYUP:
+                    waiting = False
 
 # create the game object
 
