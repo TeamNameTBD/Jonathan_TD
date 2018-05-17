@@ -67,7 +67,7 @@ CREDIT_VALUE = 15
 
 # Spawn settings
 SPAWN_DELAY = 1000
-WAVE_SIZE = 20
+WAVE_SIZE = 1
 
 # End settings
 END_HEALTH = 1000
