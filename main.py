@@ -13,14 +13,23 @@ class Game:
     # Initialize pygame and load data
 
     def __init__(self):
+        # Initialize Pygame
         pg.init()
+        # Create screen object
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        # Set Caption
         pg.display.set_caption(TITLE)
+        # Start game clock
         self.clock = pg.time.Clock()
+        # Set the rate that a key will repeat while held down
         pg.key.set_repeat(500, 100)
+        # Variable to know if the game has ended
         self.end = None
+        # Variable if game is playing
         self.playing = True
+        # Variable if game is running
         self.running = True
+        # Load base game data
         self.load_data()
 
         # Buttons
@@ -30,7 +39,10 @@ class Game:
 
     # Loads files into pygame
     def load_data(self):
+        # Directory of the game
         game_folder = path.dirname(__file__)
+
+        # Pathing algorythm
         self.map_data = []
         with open(path.join(game_folder, 'map.txt'), 'rt') as f:
             for line in f:
@@ -43,6 +55,7 @@ class Game:
         mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
         self.mob_path = pathing.find_change_in_dir(mob_path)
 
+    # Method to draw text on the screen
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
         text_surface = font.render(text, True, color)
@@ -85,6 +98,8 @@ class Game:
         self.cannon_tower_button = Button(self, ["Cannon Tower", f"Cost: {TOWERS['Cannon']['Cost']}"],
                                           WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
+
+        # Read through map and spawn tiles accordingly
         for row, tiles in enumerate(self.map_data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
@@ -100,11 +115,15 @@ class Game:
         # game loop - set self.playing = False to end the game
         self.playing = True
         while self.playing:
+            # Game Clock
             self.dt = self.clock.tick(FPS) / 1000
+
+            # Main loop
             self.events()
             self.update()
             self.draw()
 
+    # Quit the game and close the window
     def quit(self):
         pg.quit()
         sys.exit()
@@ -129,12 +148,14 @@ class Game:
                 self.end_condition = "win"
                 self.playing = False
 
+    # Debug method to show grid
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILESIZE):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
+    # Draw the screen
     def draw(self):
         self.screen.fill(BGCOLOR)
         for sprite in self.all_sprites:
