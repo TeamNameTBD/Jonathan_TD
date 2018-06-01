@@ -77,3 +77,6 @@ BULLET_SPEED = 800
 
 # Effects
 DAMAGE_ALPHA = [i for i in range(0, 255, 55)]
+
+# Camera Settings
+CAMERA_SPEED = 10

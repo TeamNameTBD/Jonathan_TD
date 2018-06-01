@@ -99,6 +99,8 @@ class Game:
                                           WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
 
+        self.camera = Camera(self.map.width, self.map.height)
+
         # Read through map and spawn tiles accordingly
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -131,6 +133,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+        self.camera.update()
 
         # mobs hit end
         hits = pg.sprite.spritecollide(self.end, self.mobs, False)
@@ -161,7 +164,8 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
         for button in self.buttons:
             button.draw_text()
