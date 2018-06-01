@@ -5,6 +5,7 @@ from os import path
 from settings import *
 from sprites import *
 from towers import *
+from tilemap import *
 from buttons import Button
 import pathing
 
@@ -43,12 +44,11 @@ class Game:
         game_folder = path.dirname(__file__)
 
         # Pathing algorythm
-        self.map_data = []
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:
-            for line in f:
-                self.map_data.append(line)
+        self.map = Map(path.join(game_folder, 'map2.txt'))
+
+
         # determing pathing solution
-        width, height, walls, start, end = pathing.load_map("map.txt")
+        width, height, walls, start, end = pathing.load_map("map2.txt")
         mob_path = pathing.AStar()
         mob_path.init_grid(width, height, walls, start, end)
         mob_path = (mob_path.solve())
@@ -100,7 +100,7 @@ class Game:
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
 
         # Read through map and spawn tiles accordingly
-        for row, tiles in enumerate(self.map_data):
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
                     Wall(self, col, row)
