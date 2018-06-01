@@ -127,9 +127,15 @@ class TowerNode(pg.sprite.Sprite):
     def get_clicked(self):
         # If the sprite is left clicked, spawn a tower
         mouse = pg.mouse.get_pressed()
+        mouse_pos = list(pg.mouse.get_pos())
+        mouse_pos[0] -= self.game.camera.x
+        mouse_pos[1] -= self.game.camera.y
+        mouse_pos = tuple(mouse_pos)
+        if self.rect.collidepoint(mouse_pos):
+            print("Collide")
         if mouse[0]:
             if self.rect.collidepoint(
-                    pg.mouse.get_pos()) and self.tower is None and self.game.tower_selection != "Sell":
+                    mouse_pos) and self.tower is None and self.game.tower_selection != "Sell":
                 if self.game.credits >= TOWERS[self.game.tower_selection]["Cost"]:
                     if self.game.tower_selection == "Gun":
                         self.tower = GunTower(self.game, self.rect.x, self.rect.y)
@@ -137,7 +143,7 @@ class TowerNode(pg.sprite.Sprite):
                     elif self.game.tower_selection == "Cannon":
                         self.tower = CannonTower(self.game, self.rect.x, self.rect.y)
                         self.game.credits -= TOWERS[self.game.tower_selection]["Cost"]
-            elif self.rect.collidepoint(pg.mouse.get_pos()) and self.tower and self.game.tower_selection == "Sell":
+            elif self.rect.collidepoint(mouse_pos) and self.tower and self.game.tower_selection == "Sell":
                 self.game.credits += int(TOWERS[self.tower.name]["Cost"] * TOWERS[self.tower.name]["Refund"])
                 self.tower.kill()
                 self.tower = None
