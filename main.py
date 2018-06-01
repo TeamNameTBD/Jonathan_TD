@@ -164,9 +164,12 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
+
+        # update sprites
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
+        self.buttons.draw(self.screen)
         for button in self.buttons:
             button.draw_text()
         pg.display.flip()

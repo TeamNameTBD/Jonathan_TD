@@ -4,8 +4,8 @@ from settings import *
 
 class Button(pg.sprite.Sprite):
     def __init__(self, game, text_list, x, y, name):
-        self.groups = game.all_sprites, game.buttons
-        pg.sprite.Sprite.__init__(self)
+        self.groups = game.buttons
+        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((BUTTON_WIDTH, BUTTON_HEIGHT))
         self.image.fill(BUTTON_BACKGROUND)
