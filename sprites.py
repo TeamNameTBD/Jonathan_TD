@@ -131,8 +131,6 @@ class TowerNode(pg.sprite.Sprite):
         mouse_pos[0] -= self.game.camera.x
         mouse_pos[1] -= self.game.camera.y
         mouse_pos = tuple(mouse_pos)
-        if self.rect.collidepoint(mouse_pos):
-            print("Collide")
         if mouse[0]:
             if self.rect.collidepoint(
                     mouse_pos) and self.tower is None and self.game.tower_selection != "Sell":

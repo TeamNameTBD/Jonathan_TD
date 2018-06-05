@@ -133,6 +133,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+        self.buttons.update()
         self.camera.update()
 
         # mobs hit end
