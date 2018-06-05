@@ -5,6 +5,7 @@ from os import path
 from settings import *
 from sprites import *
 from towers import *
+from tilemap import *
 from buttons import Button
 import pathing
 
@@ -43,12 +44,11 @@ class Game:
         game_folder = path.dirname(__file__)
 
         # Pathing algorythm
-        self.map_data = []
-        with open(path.join(game_folder, 'map.txt'), 'rt') as f:
-            for line in f:
-                self.map_data.append(line)
+        self.map = Map(path.join(game_folder, 'map2.txt'))
+
+
         # determing pathing solution
-        width, height, walls, start, end = pathing.load_map("map.txt")
+        width, height, walls, start, end = pathing.load_map("map2.txt")
         mob_path = pathing.AStar()
         mob_path.init_grid(width, height, walls, start, end)
         mob_path = (mob_path.solve())
@@ -99,8 +99,10 @@ class Game:
                                           WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
 
+        self.camera = Camera(self.map.width, self.map.height)
+
         # Read through map and spawn tiles accordingly
-        for row, tiles in enumerate(self.map_data):
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
                     Wall(self, col, row)
@@ -131,6 +133,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+        self.camera.update()
 
         # mobs hit end
         hits = pg.sprite.spritecollide(self.end, self.mobs, False)
@@ -161,8 +164,12 @@ class Game:
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
-        self.all_sprites.draw(self.screen)
+
+        # update sprites
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
+        self.buttons.draw(self.screen)
         for button in self.buttons:
             button.draw_text()
         pg.display.flip()
