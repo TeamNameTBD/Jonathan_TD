@@ -133,6 +133,7 @@ class Game:
     def update(self):
         # update portion of the game loop
         self.all_sprites.update()
+        self.buttons.update()
         self.camera.update()
 
         # mobs hit end
@@ -168,6 +169,14 @@ class Game:
         # update sprites
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+        for tower in self.towers:
+            mouse_pos = list(pg.mouse.get_pos())
+            mouse_pos[0] -= self.camera.x
+            mouse_pos[1] -= self.camera.y
+            mouse_pos = tuple(mouse_pos)
+            if tower.rect.collidepoint(mouse_pos):
+                pg.draw.circle(self.screen, WHITE, (int(tower.pos.x), int(tower.pos.y)), tower.attack_radius, 5)
+
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
         self.buttons.draw(self.screen)
         for button in self.buttons:
