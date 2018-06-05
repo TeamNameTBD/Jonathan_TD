@@ -175,7 +175,7 @@ class Game:
             mouse_pos[1] -= self.camera.y
             mouse_pos = tuple(mouse_pos)
             if tower.rect.collidepoint(mouse_pos):
-                pg.draw.circle(self.screen, WHITE, (int(tower.pos.x), int(tower.pos.y)), tower.attack_radius, 5)
+                pg.draw.circle(self.screen, WHITE, self.camera.apply_circle(tower.pos), tower.attack_radius, 5)
 
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
         self.buttons.draw(self.screen)

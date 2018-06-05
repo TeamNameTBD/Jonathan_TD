@@ -1,6 +1,7 @@
 import pygame as pg
 from settings import *
 
+vec = pg.math.Vector2
 
 class Map:
     def __init__(self, filename):
@@ -25,6 +26,12 @@ class Camera:
 
     def apply(self, entity):
         return entity.move(self.camera.topleft)
+
+    def apply_circle(self, pos):
+        # POS must be a vector2
+        adj_pos = pos + vec(self.x, self.y)
+        adj_pos = (int(adj_pos.x), int(adj_pos.y))
+        return adj_pos
 
     def update(self):
         keystate = pg.key.get_pressed()
