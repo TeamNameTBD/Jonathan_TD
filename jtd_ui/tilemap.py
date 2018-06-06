@@ -40,14 +40,20 @@ class TiledMap:
 
 
 class Camera:
+    # Camera class
+    # Uses Arrow Keys to move around and stops at the edge of maps
     def __init__(self, width, height, map_width, map_height):
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
+
+        # x and y values are in the negative, keep that in mind where any math is involved here
         self.map_width = map_width
         self.map_height = map_height
-        self.x = 0
-        self.y = 0
+
+        # TODO find a better way of determining the starting location of the camera
+        self.x = -int(map_width / 2) + 250
+        self.y = -int(map_height / 2)
 
     def apply(self, entity):
         return entity.move(self.camera.topleft)
@@ -80,5 +86,3 @@ class Camera:
             if self.y - self.height < -self.map_height:
                 self.y = -self.map_height + self.height
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
-        print(f"x: {self.x - self.width}, y: {self.y - self.height}")
-        print(f"map width: {self.map_width}, map height: {self.map_height}")
