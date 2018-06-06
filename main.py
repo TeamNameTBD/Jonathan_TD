@@ -40,15 +40,20 @@ class Game:
 
     # Loads files into pygame
     def load_data(self):
-        # Directory of the game
+        # Directories
         game_folder = path.dirname(__file__)
+        map_folder = path.join(game_folder, "maps")
+        img_folder = path.join(game_folder, "img")
 
         # Pathing algorythm
-        self.map = Map(path.join(game_folder, 'map2.txt'))
+        self.map = TiledMap(path.join(map_folder, "Map2.tmx"))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
 
 
         # determing pathing solution
-        width, height, walls, start, end = pathing.load_map("map2.txt")
+        pathing.load_tiled_map(self.map)
+        width, height, walls, start, end = pathing.load_map("map.txt")
         mob_path = pathing.AStar()
         mob_path.init_grid(width, height, walls, start, end)
         mob_path = (mob_path.solve())
@@ -99,19 +104,18 @@ class Game:
                                           WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
 
-        self.camera = Camera(self.map.width, self.map.height)
+        self.camera = Camera(WIDTH, HEIGHT, self.map.width, self.map.height)
 
-        # Read through map and spawn tiles accordingly
-        for row, tiles in enumerate(self.map.data):
-            for col, tile in enumerate(tiles):
-                if tile == "1":
-                    Wall(self, col, row)
-                if tile == "S":
-                    Spawn(self, col * TILESIZE, row * TILESIZE)
-                if tile == "E":
-                    self.end = End(self, col * TILESIZE, row * TILESIZE)
-                if tile == "T":
-                    TowerNode(self, col * TILESIZE, row * TILESIZE)
+        # Spawn Tiles according to Tiled Map
+        for tile_object in self.map.tmxdata.objects:
+            if tile_object.name == "Wall":
+                Wall(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == "Start":
+                Spawn(self, tile_object.x, tile_object.y)
+            if tile_object.name == "End":
+                self.end = End(self, tile_object.x, tile_object.y)
+            if tile_object.name == "Tower":
+                TowerNode(self, tile_object.x, tile_object.y)
 
     def run(self):
         # game loop - set self.playing = False to end the game
@@ -161,7 +165,7 @@ class Game:
 
     # Draw the screen
     def draw(self):
-        self.screen.fill(BGCOLOR)
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
