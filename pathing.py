@@ -1,5 +1,6 @@
 import pygame as pg
 import heapq
+import pytmx
 
 vec = pg.math.Vector2
 
@@ -38,15 +39,33 @@ def load_map(txt):
             map.append(line)
     for row, tiles in enumerate(map):
         for col, tile in enumerate(tiles):
-            if tile == "1" or tile == "T":
+            if tile == "0":
                 walls.append((col, row))
-            if tile == "S":
+            if tile == "3":
                 start = (col, row)
-            if tile == "E":
+            if tile == "2":
                 end = (col, row)
     height = max(len(map), len(map[0]))
     width = max(len(map), len(map[0]))
     return width, height, walls, start, end
+
+
+def load_tiled_map(game_map):
+    map = []
+    walls = []
+    start = None
+    end = None
+    path = game_map.tmxdata.get_layer_by_name("Mob Path")
+    # print(len(path))
+    with open("map.txt", "w") as f:
+        row = 0
+        for tile in path:
+            if tile[1] == row:
+                f.write(str(tile[2]))
+            else:
+                f.write("\n")
+                row = tile[1]
+                f.write(str(tile[2]))
 
 
 class Cell(object):
