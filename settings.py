@@ -45,7 +45,6 @@ TOWERS = {
         "Fire Rate": 250,
         "Cost": 250,
         "Refund": 0.75,
-        "Color": WHITE
     },
     "Cannon": {
         # "Class": CannonTower,
@@ -54,9 +53,26 @@ TOWERS = {
         "Fire Rate": 1000,
         "Cost": 350,
         "Refund": 0.75,
-        "Color": CYAN
     },
 }
+
+# Tower Images
+TOWER_IMAGES = {"Double Barrel": "DoubleBarrelTower.png",
+                "Double Missile": "DoubleMissileTower.png",
+                "Large Missile": "LargeMissileTower.png",
+                "Single Barrel": "SingleBarrelTower.png",
+                "Base Tower": "Tower1.png"}
+
+# Bullet Images
+BULLET_IMAGES = {}
+
+# MOB Images
+MOB_IMAGES = {"Knight": "Knight.png",
+              "Plane1": "Plane1.png",
+              "Plane2": "Plane2.png",
+              "Robot": "Robot.png",
+              "Soldier": "Soldier.png",
+              "Zombie": "Zombie.png"}
 
 # Mob settings
 MOB_SPEED = 100

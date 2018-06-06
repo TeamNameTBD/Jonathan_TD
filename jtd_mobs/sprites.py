@@ -111,13 +111,11 @@ class Mob(pg.sprite.Sprite):
 class TowerNode(pg.sprite.Sprite):
     # Sprite that creates a node where towers can be placed
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
+        self.groups = game.nodes, game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # Temporary image
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(BROWN)
-        self.rect = self.image.get_rect()
+        self.rect = pg.Rect(x, y, TILESIZE, TILESIZE)
         self.rect.topleft = (x, y)
         self.clicked = pg.time.get_ticks()
         self.tower = None

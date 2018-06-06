@@ -11,8 +11,7 @@ class Tower(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # Temporary Image
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
+        self.image = self.game.single_barrel_img
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.pos = vec(self.rect.center)
@@ -56,13 +55,13 @@ class Tower(pg.sprite.Sprite):
     def shooting_anim(self):
         # Flash as shooting
         self.shooting = True
-        self.damage_alpha = chain(DAMAGE_ALPHA * 2)
+        self.damage_alpha = chain(DAMAGE_ALPHA)
 
     def update(self, *args):
         self.acquire_target()
         self.shoot()
-        self.image.fill(WHITE)
         if self.shooting:
+            # TODO THis makes the tower disappear
             try:
                 self.image.fill((255, 0, 0, next(self.damage_alpha)), special_flags=pg.BLEND_RGBA_MULT)
             except StopIteration:
@@ -72,7 +71,7 @@ class Tower(pg.sprite.Sprite):
 class GunTower(Tower):
     def __init__(self, game, x, y):
         Tower.__init__(self, game, x, y)
-        self.image.fill(TOWERS["Gun"]["Color"])
+        # self.image.fill(TOWERS["Gun"]["Color"])
         self.damage = TOWERS["Gun"]["Damage"]
         self.attack_radius = TOWERS["Gun"]["Attack Radius"]
         self.fire_rate = TOWERS["Gun"]["Fire Rate"]
@@ -82,7 +81,7 @@ class GunTower(Tower):
 class CannonTower(Tower):
     def __init__(self, game, x, y):
         Tower.__init__(self, game, x, y)
-        self.image.fill(TOWERS["Cannon"]["Color"])
+        # self.image.fill(TOWERS["Cannon"]["Color"])
         self.damage = TOWERS["Cannon"]["Damage"]
         self.attack_radius = TOWERS["Cannon"]["Attack Radius"]
         self.fire_rate = TOWERS["Cannon"]["Fire Rate"]

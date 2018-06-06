@@ -77,6 +77,10 @@ class Game:
         mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
         self.mob_path = pathing.find_change_in_dir(mob_path)
 
+        # Load all images
+        self.zombie_img = pg.image.load(path.join(img_folder, MOB_IMAGES["Zombie"])).convert_alpha()
+        self.single_barrel_img = pg.image.load(path.join(img_folder, TOWER_IMAGES["Single Barrel"])).convert_alpha()
+
     # Method to draw text on the screen
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
@@ -114,6 +118,7 @@ class Game:
 
         # Sprite groups
         self.all_sprites = pg.sprite.Group()
+        self.nodes = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
@@ -202,7 +207,8 @@ class Game:
         # update sprites
         # draw all sprites onto the screen
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            if self.nodes not in sprite.groups:
+                self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
 
         # if the mouse is hovering over a tower, draw that tower's range
         for tower in self.towers:
