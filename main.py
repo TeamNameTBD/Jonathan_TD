@@ -1,15 +1,32 @@
-import pygame as pg
-import random
 import sys
 from os import path
-from settings import *
-from sprites import *
-from towers import *
-from tilemap import *
-from buttons import Button
-import pathing
+from jtd_mobs.sprites import *
+from jtd_towers.towers import *
+from jtd_ui.tilemap import *
+from jtd_ui.buttons import Button
+from jtd_ui import pathing
+from jtd_ui import game_intro
 
 
+"""
+
+Jonathan's Tower Defence Game
+- Better name tbd :)
+
+Developed by Tensor Studios
+Jonathan Layman
+Andrew Albright
+Devin Emnett
+
+Art by Kenny
+Kenny.nl
+
+
+"""
+
+
+# This is the main game class. All methods of the game are called as a part of this class. it is called at the bottom
+# of the file.
 class Game:
     # Initialize pygame and load data
 
@@ -88,22 +105,35 @@ class Game:
     # Clear all and create new game
     def new(self):
         # initialize all variables and do all the setup for a new game
+        # Player Money
         self.credits = STARTING_CASH
+
+        # Time between mob spawns
+        # TODO create a more complex way of determining this so that better waves can be created
+        self.mob_timer_delay = pg.time.get_ticks()
+
+        # Sprite groups
         self.all_sprites = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
-        self.mob_timer_delay = pg.time.get_ticks()
         self.bullets = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.buttons = pg.sprite.Group()
+
+        # Spawn buttons on screen
+        # Initial Gun Selection
         self.tower_selection = "Gun"
-        self.end_condition = ""
+        # Create and spawn buttons
         self.gun_tower_button = Button(self, ["Gun Tower", f"Cost: {TOWERS['Gun']['Cost']}"],
                                        WIDTH * 0.05, HEIGHT * 0.85, "Gun")
         self.cannon_tower_button = Button(self, ["Cannon Tower", f"Cost: {TOWERS['Cannon']['Cost']}"],
                                           WIDTH * 0.15, HEIGHT * 0.85, "Cannon")
         self.sell_tower_button = Button(self, ["Sell Tower", "75% Refund"], WIDTH * 0.25, HEIGHT * 0.85, "Sell")
 
+        # End condition is string, can be "win" or "lose"
+        self.end_condition = ""
+
+        # Spawn Camera
         self.camera = Camera(WIDTH, HEIGHT, self.map.width, self.map.height)
 
         # Spawn Tiles according to Tiled Map
@@ -117,6 +147,7 @@ class Game:
             if tile_object.name == "Tower":
                 TowerNode(self, tile_object.x, tile_object.y)
 
+    # Once the game is started, run the game until it ends
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
@@ -136,6 +167,7 @@ class Game:
 
     def update(self):
         # update portion of the game loop
+        # not all sprite groups need to be updated
         self.all_sprites.update()
         self.buttons.update()
         self.camera.update()
@@ -150,29 +182,29 @@ class Game:
         if self.end.health == 0:
             self.end_condition = "lose"
             self.playing = False
+
+        # Check if the first mob has been spawned before determining if the "win" condition has been achieved
         now = pg.time.get_ticks()
         if now - self.mob_timer_delay > SPAWN_DELAY:
             if len(self.mobs) == 0:
                 self.end_condition = "win"
                 self.playing = False
 
-    # Debug method to show grid
-    def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
-
     # Draw the screen
     def draw(self):
+        # draw the map onto the screen
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        # draw health bars for mobs and End point
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) or isinstance(sprite, End):
                 sprite.draw_health()
 
         # update sprites
+        # draw all sprites onto the screen
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+
+        # if the mouse is hovering over a tower, draw that tower's range
         for tower in self.towers:
             mouse_pos = list(pg.mouse.get_pos())
             mouse_pos[0] -= self.camera.x
@@ -181,75 +213,32 @@ class Game:
             if tower.rect.collidepoint(mouse_pos):
                 pg.draw.circle(self.screen, WHITE, self.camera.apply_circle(tower.pos), tower.attack_radius, 5)
 
+        # Draw the player's current money
         self.draw_text(f"Credits: {self.credits}", FONT, 30, WHITE, 35, 30, align="nw")
+        # Draw all buttons
         self.buttons.draw(self.screen)
+        # Draw text on buttons
         for button in self.buttons:
             button.draw_text()
+
+        # Display all loaded data to physical screen
         pg.display.flip()
 
     def events(self):
         # catch all events here
         for event in pg.event.get():
+            # Quit if Window Close is pressed
             if event.type == pg.QUIT:
                 self.quit()
+            # Quit if ESC is presses
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
 
-    # Intro Screen Methods
-    def text_objects(self, text, font):
-        textSurface = font.render(text, True, BLACK)
-        return textSurface, textSurface.get_rect()
-
-    def button(self, msg, x, y, w, h, ic, ac, action=None):
-        mouse = pg.mouse.get_pos()
-        click = pg.mouse.get_pressed()
-
-        if x + w > mouse[0] > x and y + h > mouse[1] > y:
-            pg.draw.rect(self.screen, ac, (x, y, w, h))
-            if click[0] == 1 and action != None:
-                if action == "play":
-                    self.intro = False
-                elif action == "quit":
-                    pg.quit()
-                    quit()
-        else:
-            pg.draw.rect(self.screen, ic, (x, y, w, h))
-
-        smallText = pg.font.Font("freesansbold.ttf", 20)
-        textSurf, textRect = self.text_objects(msg, smallText)
-        textRect.center = ((x + (w / 2)), (y + (h / 2)))
-        self.screen.blit(textSurf, textRect)
-
-        if x + w > mouse[0] > x and y + h > mouse[1] > y:
-            pg.draw.rect(self.screen, ac, (x, y, w, h))
-        else:
-            pg.draw.rect(self.screen, ic, (x, y, w, h))
-
-        textSurf, textRect = self.text_objects(msg, smallText)
-        textRect.center = ((x + (w / 2)), (y + (h / 2)))
-        self.screen.blit(textSurf, textRect)
-
-    def game_intro(self):
-        self.intro = True
-        while self.intro:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    quit()
-            self.screen.fill(WHITE)
-            largeText = pg.font.Font('freesansbold.ttf', 90)
-            TextSurf, TextRect = self.text_objects("TOWER DEFENSE!!!", largeText)
-            TextRect.center = ((WIDTH / 2), (HEIGHT / 2))
-            self.screen.blit(TextSurf, TextRect)
-
-            self.button("START", 150, 450, 150, 100, LIGHTGREEN, GREEN, "play")
-            self.button("QUIT", 150, 550, 150, 100, LIGHTRED, RED, "quit")
-
-            pg.display.update()
-
     def show_start_screen(self):
-        pass
+        # Run the game intro screen
+        self.intro = True
+        game_intro.game_intro(self)
 
     def show_go_screen(self):
         # game over/continue
@@ -274,14 +263,12 @@ class Game:
                 if event.type == pg.KEYUP:
                     waiting = False
 
+
 # create the game object
-
 g = Game()
-g.show_start_screen()
-
 
 while g.running:
-    g.game_intro()
+    g.show_start_screen()
     g.new()
     g.run()
     g.show_go_screen()

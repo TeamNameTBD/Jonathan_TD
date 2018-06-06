@@ -1,6 +1,4 @@
-import pygame as pg
-from settings import *
-from towers import *
+from jtd_towers.towers import *
 
 vec = pg.math.Vector2
 
