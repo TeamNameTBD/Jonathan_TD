@@ -23,6 +23,7 @@ class Tower(pg.sprite.Sprite):
         self.last_shot = pg.time.get_ticks()
         self.shooting = False
         self.damage_alpha = None
+        self.rot = 0
 
     # Chooses target based on how close it is to the end
     def acquire_target(self):
@@ -49,7 +50,7 @@ class Tower(pg.sprite.Sprite):
         if self.target and self.target.alive():
             if now - self.last_shot > self.fire_rate:
                 self.last_shot = now
-                self.shooting_anim()
+                # self.shooting_anim()
                 self.target.health -= self.damage
 
     def shooting_anim(self):
@@ -60,8 +61,15 @@ class Tower(pg.sprite.Sprite):
     def update(self, *args):
         self.acquire_target()
         self.shoot()
+        if self.target is not None:
+            self.rot = (self.target.pos - self.pos).angle_to(vec(0, -1))
+        self.image = pg.transform.rotate(self.game.single_barrel_img, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
         if self.shooting:
             # TODO THis makes the tower disappear
+            # I have just disabled this for now
             try:
                 self.image.fill((255, 0, 0, next(self.damage_alpha)), special_flags=pg.BLEND_RGBA_MULT)
             except StopIteration:
