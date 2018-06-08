@@ -52,6 +52,7 @@ class Tower(pg.sprite.Sprite):
                 self.last_shot = now
                 # self.shooting_anim()
                 self.target.health -= self.damage
+                FireFlash(self.game, self.pos + vec(0, 25).rotate(-self.rot))
 
     def shooting_anim(self):
         # Flash as shooting
@@ -94,3 +95,19 @@ class CannonTower(Tower):
         self.attack_radius = TOWERS["Cannon"]["Attack Radius"]
         self.fire_rate = TOWERS["Cannon"]["Fire Rate"]
         self.name = "Cannon"
+
+
+class FireFlash(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = self.game.gun_fire_img
+        self.rect = self.image.get_rect()
+        self.pos = pos
+        self.rect.center = pos
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        if pg.time.get_ticks() - self.spawn_time > 40:
+            self.kill()

@@ -80,6 +80,7 @@ class Game:
         # Load all images
         self.zombie_img = pg.image.load(path.join(img_folder, MOB_IMAGES["Zombie"])).convert_alpha()
         self.single_barrel_img = pg.image.load(path.join(img_folder, TOWER_IMAGES["Single Barrel"])).convert_alpha()
+        self.gun_fire_img = pg.image.load(path.join(img_folder, "fire1.png")).convert_alpha()
 
     # Method to draw text on the screen
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
