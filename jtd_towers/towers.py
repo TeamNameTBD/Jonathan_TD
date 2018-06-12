@@ -7,12 +7,12 @@ vec = pg.math.Vector2
 
 class Tower(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = TOWER_LAYER
         self.groups = game.all_sprites, game.towers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # Temporary Image
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(WHITE)
+        self.image = self.game.single_barrel_img
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.pos = vec(self.rect.center)
@@ -24,6 +24,7 @@ class Tower(pg.sprite.Sprite):
         self.last_shot = pg.time.get_ticks()
         self.shooting = False
         self.damage_alpha = None
+        self.rot = 0
 
     # Chooses target based on how close it is to the end
     def acquire_target(self):
@@ -50,19 +51,27 @@ class Tower(pg.sprite.Sprite):
         if self.target and self.target.alive():
             if now - self.last_shot > self.fire_rate:
                 self.last_shot = now
-                self.shooting_anim()
+                # self.shooting_anim()
                 self.target.health -= self.damage
+                FireFlash(self.game, self.pos + vec(0, -40).rotate(-self.rot), self.rot)
 
     def shooting_anim(self):
         # Flash as shooting
         self.shooting = True
-        self.damage_alpha = chain(DAMAGE_ALPHA * 2)
+        self.damage_alpha = chain(DAMAGE_ALPHA)
 
     def update(self, *args):
         self.acquire_target()
         self.shoot()
-        self.image.fill(WHITE)
+        if self.target is not None:
+            self.rot = (self.target.pos - self.pos).angle_to(vec(0, -1))
+        self.image = pg.transform.rotate(self.game.single_barrel_img, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
         if self.shooting:
+            # TODO THis makes the tower disappear
+            # I have just disabled this for now
             try:
                 self.image.fill((255, 0, 0, next(self.damage_alpha)), special_flags=pg.BLEND_RGBA_MULT)
             except StopIteration:
@@ -72,7 +81,7 @@ class Tower(pg.sprite.Sprite):
 class GunTower(Tower):
     def __init__(self, game, x, y):
         Tower.__init__(self, game, x, y)
-        self.image.fill(TOWERS["Gun"]["Color"])
+        # self.image.fill(TOWERS["Gun"]["Color"])
         self.damage = TOWERS["Gun"]["Damage"]
         self.attack_radius = TOWERS["Gun"]["Attack Radius"]
         self.fire_rate = TOWERS["Gun"]["Fire Rate"]
@@ -82,8 +91,25 @@ class GunTower(Tower):
 class CannonTower(Tower):
     def __init__(self, game, x, y):
         Tower.__init__(self, game, x, y)
-        self.image.fill(TOWERS["Cannon"]["Color"])
+        # self.image.fill(TOWERS["Cannon"]["Color"])
         self.damage = TOWERS["Cannon"]["Damage"]
         self.attack_radius = TOWERS["Cannon"]["Attack Radius"]
         self.fire_rate = TOWERS["Cannon"]["Fire Rate"]
         self.name = "Cannon"
+
+
+class FireFlash(pg.sprite.Sprite):
+    def __init__(self, game, pos, rot):
+        self._layer = EFFECTS_LAYER
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.transform.rotate(self.game.gun_fire_img, rot)
+        self.rect = self.image.get_rect()
+        self.pos = pos
+        self.rect.center = pos
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        if pg.time.get_ticks() - self.spawn_time > 40:
+            self.kill()

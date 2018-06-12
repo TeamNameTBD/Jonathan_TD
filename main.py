@@ -77,6 +77,11 @@ class Game:
         mob_path = [vec(x * TILESIZE + TILESIZE / 2, y * TILESIZE + TILESIZE / 2) for (x, y) in mob_path]
         self.mob_path = pathing.find_change_in_dir(mob_path)
 
+        # Load all images
+        self.zombie_img = pg.image.load(path.join(img_folder, MOB_IMAGES["Zombie"])).convert_alpha()
+        self.single_barrel_img = pg.image.load(path.join(img_folder, TOWER_IMAGES["Single Barrel"])).convert_alpha()
+        self.gun_fire_img = pg.image.load(path.join(img_folder, "fire1.png")).convert_alpha()
+
     # Method to draw text on the screen
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):
         font = pg.font.Font(font_name, size)
@@ -113,7 +118,8 @@ class Game:
         self.mob_timer_delay = pg.time.get_ticks()
 
         # Sprite groups
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
+        self.nodes = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
@@ -202,7 +208,17 @@ class Game:
         # update sprites
         # draw all sprites onto the screen
         for sprite in self.all_sprites:
-            self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            try:
+                self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            except AttributeError:
+                continue
+
+            # if self.nodes in sprite.groups:
+            #     continue
+            # else:
+            #     self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            #     if sprite.__name__ == "FireFlash":
+            #         print("It's happening")
 
         # if the mouse is hovering over a tower, draw that tower's range
         for tower in self.towers:

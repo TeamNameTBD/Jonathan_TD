@@ -4,6 +4,7 @@ import pytmx
 
 vec = pg.math.Vector2
 
+
 class Map:
     def __init__(self, filename):
         self.data = []
@@ -54,6 +55,8 @@ class Camera:
         # TODO find a better way of determining the starting location of the camera
         self.x = -int(map_width / 2) + 250
         self.y = -int(map_height / 2)
+        # self.x = 0
+        # self.y = 0
 
     def apply(self, entity):
         return entity.move(self.camera.topleft)
