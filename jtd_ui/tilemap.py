@@ -4,6 +4,7 @@ import pytmx
 
 vec = pg.math.Vector2
 
+
 class Map:
     def __init__(self, filename):
         self.data = []

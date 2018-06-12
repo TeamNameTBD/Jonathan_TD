@@ -96,3 +96,9 @@ DAMAGE_ALPHA = [i for i in range(0, 255, 55)]
 
 # Camera Settings
 CAMERA_SPEED = 10
+
+# Layers
+WALL_LAYER = 1
+MOB_LAYER = 2
+TOWER_LAYER = 3
+EFFECTS_LAYER = 4

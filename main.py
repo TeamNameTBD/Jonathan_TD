@@ -118,7 +118,7 @@ class Game:
         self.mob_timer_delay = pg.time.get_ticks()
 
         # Sprite groups
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.nodes = pg.sprite.Group()
         self.towers = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -208,8 +208,17 @@ class Game:
         # update sprites
         # draw all sprites onto the screen
         for sprite in self.all_sprites:
-            if self.nodes not in sprite.groups:
+            try:
                 self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            except AttributeError:
+                continue
+
+            # if self.nodes in sprite.groups:
+            #     continue
+            # else:
+            #     self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
+            #     if sprite.__name__ == "FireFlash":
+            #         print("It's happening")
 
         # if the mouse is hovering over a tower, draw that tower's range
         for tower in self.towers:

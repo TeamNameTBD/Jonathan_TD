@@ -7,6 +7,7 @@ vec = pg.math.Vector2
 
 class Tower(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = TOWER_LAYER
         self.groups = game.all_sprites, game.towers
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -52,7 +53,7 @@ class Tower(pg.sprite.Sprite):
                 self.last_shot = now
                 # self.shooting_anim()
                 self.target.health -= self.damage
-                FireFlash(self.game, self.pos + vec(0, 25).rotate(-self.rot))
+                FireFlash(self.game, self.pos + vec(0, -40).rotate(-self.rot), self.rot)
 
     def shooting_anim(self):
         # Flash as shooting
@@ -98,11 +99,12 @@ class CannonTower(Tower):
 
 
 class FireFlash(pg.sprite.Sprite):
-    def __init__(self, game, pos):
+    def __init__(self, game, pos, rot):
+        self._layer = EFFECTS_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = self.game.gun_fire_img
+        self.image = pg.transform.rotate(self.game.gun_fire_img, rot)
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.center = pos
