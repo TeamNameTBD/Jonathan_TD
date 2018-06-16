@@ -221,13 +221,6 @@ class Game:
             except AttributeError:
                 continue
 
-            # if self.nodes in sprite.groups:
-            #     continue
-            # else:
-            #     self.screen.blit(sprite.image, self.camera.apply(sprite.rect))
-            #     if sprite.__name__ == "FireFlash":
-            #         print("It's happening")
-
         # if the mouse is hovering over a tower, draw that tower's range
         for tower in self.towers:
             mouse_pos = list(pg.mouse.get_pos())
