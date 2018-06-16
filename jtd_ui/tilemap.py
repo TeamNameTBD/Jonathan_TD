@@ -72,19 +72,19 @@ class Camera:
 
     def update(self):
         keystate = pg.key.get_pressed()
-        if keystate[pg.K_LEFT]:
+        if keystate[pg.K_LEFT] or keystate[pg.K_a]:
             self.x += CAMERA_SPEED
             if self.x > 0:
                 self.x = 0
-        if keystate[pg.K_RIGHT]:
+        if keystate[pg.K_RIGHT] or keystate[pg.K_d]:
             self.x -= CAMERA_SPEED
             if self.x - self.width < -self.map_width:
                 self.x = -self.map_width + self.width
-        if keystate[pg.K_UP]:
+        if keystate[pg.K_UP] or keystate[pg.K_w]:
             self.y += CAMERA_SPEED
             if self.y > 0:
                 self.y = 0
-        if keystate[pg.K_DOWN]:
+        if keystate[pg.K_DOWN] or keystate[pg.K_s]:
             self.y -= CAMERA_SPEED
             if self.y - self.height < -self.map_height:
                 self.y = -self.map_height + self.height
