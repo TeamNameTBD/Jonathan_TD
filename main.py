@@ -1,6 +1,7 @@
 import sys
 from os import path
-from jtd_mobs.sprites import *
+from jtd_mobs.mobs import *
+from jtd_mobs.nodes import *
 from jtd_towers.towers import *
 from jtd_ui.tilemap import *
 from jtd_ui.buttons import Button
@@ -80,7 +81,14 @@ class Game:
         # Load all images
         self.zombie_img = pg.image.load(path.join(img_folder, MOB_IMAGES["Zombie"])).convert_alpha()
         self.single_barrel_img = pg.image.load(path.join(img_folder, TOWER_IMAGES["Single Barrel"])).convert_alpha()
+        self.base_tower_img = pg.image.load(path.join(img_folder, TOWER_IMAGES["Base Tower"])).convert_alpha()
         self.gun_fire_img = pg.image.load(path.join(img_folder, "fire1.png")).convert_alpha()
+
+        # Tower Images
+        self.tower_images = {
+            "Gun": self.single_barrel_img,
+            "Cannon": self.base_tower_img
+        }
 
     # Method to draw text on the screen
     def draw_text(self, text, font_name, size, color, x, y, align="nw"):

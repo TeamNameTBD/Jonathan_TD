@@ -75,11 +75,16 @@ MOB_IMAGES = {"Knight": "Knight.png",
               "Zombie": "Zombie.png"}
 
 # Mob settings
-MOB_SPEED = 100
-MOB_HEALTH = 100
-MOB_HIT_RECT = pg.Rect(0, 0, TILESIZE, TILESIZE)
-MOB_DAMAGE = 500
-CREDIT_VALUE = 25
+MOBS = {
+    "Zombie": {
+        # add image later
+        "Image": None,
+        "Speed": 100,
+        "Health": 100,
+        "Damage": 500,
+        "Credit Value": 25
+    }
+}
 
 # Spawn settings
 SPAWN_DELAY = 1000
