@@ -1,6 +1,7 @@
 import sys
 from os import path
-from jtd_mobs.sprites import *
+from jtd_mobs.mobs import *
+from jtd_mobs.nodes import *
 from jtd_towers.towers import *
 from jtd_ui.tilemap import *
 from jtd_ui.buttons import Button
