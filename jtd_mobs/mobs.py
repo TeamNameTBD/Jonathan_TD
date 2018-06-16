@@ -5,12 +5,14 @@ vec = pg.math.Vector2
 
 # Main Mob Class
 class Mob(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, name="Zombie"):
         # Layer mob is drawn
         self._layer = MOB_LAYER
         # sprite groups
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
+        # Name for determining which mob to spawn
+        self.name = name
         self.game = game
         # debug value
         self.number = len(self.game.mobs)
@@ -26,10 +28,10 @@ class Mob(pg.sprite.Sprite):
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         # Mob Stats
-        self.health = MOB_HEALTH
+        self.health = MOBS[self.name]["Health"]
         self.health_bar = None
-        self.speed = MOB_SPEED
-        self.damage = MOB_DAMAGE
+        self.speed = MOBS[self.name]["Speed"]
+        self.damage = MOBS[self.name]["Damage"]
         # Predefined path of mob
         self.path = self.game.mob_path
         # How far along the path the mob is
@@ -42,7 +44,7 @@ class Mob(pg.sprite.Sprite):
 
     def draw_health(self):
         # Display health bar as percentage of health
-        health_pct = self.health / MOB_HEALTH
+        health_pct = self.health / MOBS[self.name]["Health"]
         if health_pct > 0.6:
             col = GREEN
         elif health_pct > 0.3:
@@ -97,7 +99,12 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         # check if mob died
         if self.health <= 0:
-            self.game.credits += CREDIT_VALUE
+            self.game.credits += MOBS[self.name]["Credit Value"]
             self.kill()
         # Show how far the mob is from the end for targeting purposes
         self.distance_from_end = len(self.path) - self.path_step
+
+
+class Zombie(Mob):
+    def __init__(self, game, x, y):
+        Mob.__init__(self, game, x, y, "Zombie")

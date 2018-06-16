@@ -1,5 +1,6 @@
 from settings import *
-from jtd_mobs.mobs import Mob
+from jtd_mobs.mobs import Zombie
+from jtd_towers.towers import *
 
 
 class TowerNode(pg.sprite.Sprite):
@@ -54,7 +55,7 @@ class Spawn(pg.sprite.Sprite):
         self.mobs_spawned = 0
 
     def spawn_mob(self):
-        Mob(self.game, self.rect.x, self.rect.y)
+        Zombie(self.game, self.rect.x, self.rect.y)
 
     def update(self, *args):
         now = pg.time.get_ticks()
