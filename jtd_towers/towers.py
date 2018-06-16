@@ -6,20 +6,20 @@ vec = pg.math.Vector2
 
 
 class Tower(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, name="Gun"):
         self._layer = TOWER_LAYER
         self.groups = game.all_sprites, game.towers
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.name = name
         self.game = game
         # Temporary Image
-        self.image = self.game.single_barrel_img
+        self.image = self.game.tower_images[self.name]
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.pos = vec(self.rect.center)
-        self.damage = 0
-        self.attack_radius = 0
-        self.fire_rate = 0
-        self.color = WHITE
+        self.damage = TOWERS["Gun"]["Damage"]
+        self.attack_radius = TOWERS["Gun"]["Attack Radius"]
+        self.fire_rate = TOWERS["Gun"]["Fire Rate"]
         self.target = None
         self.last_shot = pg.time.get_ticks()
         self.shooting = False
@@ -65,7 +65,7 @@ class Tower(pg.sprite.Sprite):
         self.shoot()
         if self.target is not None:
             self.rot = (self.target.pos - self.pos).angle_to(vec(0, -1))
-        self.image = pg.transform.rotate(self.game.single_barrel_img, self.rot)
+        self.image = pg.transform.rotate(self.game.tower_images[self.name], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
